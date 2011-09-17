@@ -16,13 +16,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp \
-    Client.cpp \
-    Connection.cpp
+    Client.cpp
 
 HEADERS += \
     Client.hpp \
-    Connection.hpp \
     Grooveshark.hpp
+
+
 
 
 

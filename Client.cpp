@@ -21,4 +21,8 @@ namespace Grooveshark {
 Client::Client() {
 }
 
+void Client::establishConnection() {
+  // …
+}
+
 } // namespace Grooveshark

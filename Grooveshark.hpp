@@ -18,6 +18,5 @@
 #define GROOVESHARK_HPP
 
 #include "Client.hpp"
-#include "Connection.hpp"
 
 #endif // GROOVESHARK_HPP
