@@ -20,15 +20,19 @@
 #include <QObject>
 #include <QVariantMap>
 
+#include <qjson/serializer.h>
+
 namespace Grooveshark {
 
 class Request : public QObject {
 public:
-    Request(const QString& method);
     Request(const QString& method, QVariantMap& parameters);
+
+    QByteArray buildRequest();
 
 private:
     QString     m_method;
+    QVariantMap m_headers;
     QVariantMap m_parameters;
 };
 

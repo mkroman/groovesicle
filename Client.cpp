@@ -15,6 +15,7 @@
  */
 
 #include "Client.hpp"
+#include <qjson/serializer.h>
 
 namespace Grooveshark {
 

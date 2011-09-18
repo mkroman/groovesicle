@@ -28,6 +28,9 @@ public:
 
     void establishConnection();
     void transmit(Request* request);
+
+private:
+    QString m_session;
 };
 
 } // namespace Grooveshark

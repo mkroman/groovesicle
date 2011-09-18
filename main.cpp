@@ -14,11 +14,24 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <QString>
+#include <QObject>
+#include <QDebug>
+#include <QVariant>
 #include <QtCore/QCoreApplication>
+
+#include "Grooveshark.hpp"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    QVariantMap d;
+    d.insert("test", "tres");
+
+    Grooveshark::Request* request = new Grooveshark::Request("test", d);
+
+    qDebug() << request->buildRequest();
 
     return a.exec();
 }

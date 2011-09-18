@@ -18,13 +18,32 @@
 
 namespace Grooveshark {
 
-Request::Request(const QString& method) : m_method(method) {
-  // …
-}
-
 Request::Request(const QString& method, QVariantMap& parameters)
   : m_method(method), m_parameters(parameters) {
-  // …
+  QVariantMap country;
+
+  m_headers.insert("client", "htmlshark");
+  m_headers.insert("clientRevision", "20110606.04");
+
+  country.insert("CC1","0");
+  country.insert("CC3","0");
+  country.insert("ID","223");
+  country.insert("CC2","0");
+  country.insert("CC4","1073741824");
+
+  m_headers.insertMulti("country", country);
+  m_parameters.insertMulti("country", country);
+}
+
+QByteArray Request::buildRequest() {
+  QVariantMap values;
+  QJson::Serializer serializer;
+
+  values.insert("method", m_method);
+  values.insert("header", m_headers);
+  values.insert("parameters", m_parameters);
+
+  return serializer.serialize(values);
 }
 
 } // namespace Grooveshark
