@@ -14,10 +14,17 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef GROOVESHARK_HPP
-#define GROOVESHARK_HPP
-
-#include "Client.hpp"
 #include "Request.hpp"
 
-#endif // GROOVESHARK_HPP
+namespace Grooveshark {
+
+Request::Request(const QString& method) : m_method(method) {
+  // …
+}
+
+Request::Request(const QString& method, QVariantMap& parameters)
+  : m_method(method), m_parameters(parameters) {
+  // …
+}
+
+} // namespace Grooveshark

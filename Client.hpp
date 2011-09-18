@@ -21,11 +21,13 @@
 
 namespace Grooveshark {
 
+class Request;
 class Client : public QObject {
 public:
     Client();
 
     void establishConnection();
+    void transmit(Request* request);
 };
 
 } // namespace Grooveshark

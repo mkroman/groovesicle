@@ -25,4 +25,8 @@ void Client::establishConnection() {
   // …
 }
 
+void Client::transmit(Request* request) {
+
+}
+
 } // namespace Grooveshark

@@ -14,10 +14,24 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef GROOVESHARK_HPP
-#define GROOVESHARK_HPP
+#ifndef GROOVESHARK_REQUEST_HPP
+#define GROOVESHARK_REQUEST_HPP
 
-#include "Client.hpp"
-#include "Request.hpp"
+#include <QObject>
+#include <QVariantMap>
 
-#endif // GROOVESHARK_HPP
+namespace Grooveshark {
+
+class Request : public QObject {
+public:
+    Request(const QString& method);
+    Request(const QString& method, QVariantMap& parameters);
+
+private:
+    QString     m_method;
+    QVariantMap m_parameters;
+};
+
+} // namespace Grooveshark
+
+#endif // GROOVESHARK_REQUEST_HPP
