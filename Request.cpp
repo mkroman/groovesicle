@@ -79,7 +79,7 @@ void Request::onFinished() {
     m_response = new Response(body);
     m_response->setParent(this);
 
-    emit success(const_cast<const Response&>(*m_response));
+    emit success(*m_response);
   }
   else {
     // error

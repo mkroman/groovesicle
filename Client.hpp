@@ -53,7 +53,8 @@ private slots:
     void processCommunicationToken(const Response& response);
 
 private:
-    QString               m_session;
+    QString               m_sessionId;
+    QString               m_sessionToken;
     QNetworkAccessManager m_networkManager;
 };
 

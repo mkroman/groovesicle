@@ -21,8 +21,8 @@
 
 namespace Grooveshark {
 
-const QString Client::APIUrl = "https://cowbell.grooveshark.com/more.php";
-const QString Client::BaseUrl = "http://grooveshark.com/";
+QString const Client::APIUrl = "https://cowbell.grooveshark.com/more.php";
+QString const Client::BaseUrl = "http://grooveshark.com/";
 
 QString const Client::Name = "htmlshark";
 QString const Client::Revision = "20110906";
@@ -34,9 +34,10 @@ void Client::establishConnection() {
   QNetworkReply* reply;
   QNetworkRequest request(BaseUrl);
 
+  reply = m_networkManager.get(request);
+
   qDebug("Establishing connection.");
 
-  reply = m_networkManager.get(request);
   connect(reply, SIGNAL(finished()), SLOT(extractSessionCookie()));
   connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(errorCommunicationToken(QNetworkReply::NetworkError)));
 }
@@ -50,12 +51,12 @@ void Client::extractSessionCookie() {
 
   foreach (const QNetworkCookie& cookie, cookieList) {
     if (cookie.name() == "PHPSESSID") {
-      m_session = QString(cookie.value());
+      m_sessionId = cookie.value();
       break;
     }
   }
 
-  if (!m_session.isEmpty())
+  if (!m_sessionId.isEmpty())
     qDebug("Extracted session cookie.");
   else
     qDebug("Failed to extract session cookie.");
@@ -67,7 +68,7 @@ void Client::getCommunicationToken() {
   Request* request = new Request("getCommunicationToken");
 
   request->setParent(this);
-  request->setParameter("secretKey", QCryptographicHash::hash(m_session.toAscii(), QCryptographicHash::Md5).toHex());
+  request->setParameter("secretKey", QCryptographicHash::hash(m_sessionId.toAscii(), QCryptographicHash::Md5).toHex());
 
   connect(request, SIGNAL(success(Response)), SLOT(processCommunicationToken(Response)));
 
@@ -80,7 +81,7 @@ void Client::processCommunicationToken(const Response& response) {
     return;
   }
   else {
-    qDebug() << "Got communication token:" << response.getResult().toString();
+    m_sessionToken = response.getResult().toString();
   }
 }
 
@@ -94,8 +95,8 @@ void Client::transmit(Request* request) {
 
   networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-  if (!m_session.isEmpty())
-    request->setHeader("session", m_session);
+  if (!m_sessionId.isEmpty())
+    request->setHeader("session", m_sessionId);
 
   reply = m_networkManager.post(networkRequest, request->buildRequest());
 
