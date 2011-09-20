@@ -5,15 +5,18 @@
 #-------------------------------------------------
 
 QT       += core
-
 QT       -= gui
 
-TARGET    = Groovesicle
-CONFIG   += link_pkgconfig
-CONFIG   += console
+TARGET = Groovesicle
+CONFIG   += link_pkgconfig console
 CONFIG   -= app_bundle
 
 TEMPLATE = app
+
+windows: {
+    INCLUDEPATH += ../vendor/qjson/include
+    LIBS += -L../vendor/qjson/lib -lqjson
+}
 
 PKGCONFIG += QJson
 

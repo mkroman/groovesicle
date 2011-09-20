@@ -20,7 +20,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include <qjson/serializer.h>
+#include <QJson/Serializer>
 
 namespace Grooveshark {
 
