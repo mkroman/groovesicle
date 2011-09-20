@@ -19,15 +19,18 @@
 
 namespace Grooveshark {
 
-QString const Client::API_URL = "http://grooveshark.com/";
-QString const Client::BASE_URL = "http://grooveshark.com/";
+const QString Client::APIUrl = "https://cowbell.grooveshark.com/";
+const QString Client::BaseUrl = "http://grooveshark.com/";
+
+QString const Client::Name = "htmlshark";
+QString const Client::Revision = "20110606.04";
 
 Client::Client() : m_networkManager() {
 }
 
 void Client::establishConnection() {
   QNetworkReply* reply;
-  QNetworkRequest request(QUrl("http://grooveshark.com"));
+  QNetworkRequest request(BaseUrl);
 
   qDebug("Establishing connection.");
 
@@ -41,7 +44,7 @@ void Client::extractSessionCookie() {
   QList<QNetworkCookie> cookieList;
 
   reply = qobject_cast<QNetworkReply *>(sender());
-  cookieList = m_networkManager.cookieJar()->cookiesForUrl(QUrl(BASE_URL));
+  cookieList = m_networkManager.cookieJar()->cookiesForUrl(QUrl(BaseUrl));
 
   foreach (const QNetworkCookie& cookie, cookieList) {
     if (cookie.name() == "PHPSESSID") {
@@ -61,11 +64,11 @@ void Client::extractSessionCookie() {
 void Client::getCommunicationToken() {
   QVariantMap map;
 
-  Request request("getCommunicationToken", map);
-  request.setParameter("secretKey", "lortihovedet");
+  Request* request = new Request("getCommunicationToken", map);
+  request->setParameter("secretKey", "lortihovedet");
 
-  connect(&request, SIGNAL(success(QVariantMap)), SLOT(processCommunicationToken(QVariantMap)));
-  transmit(&request);
+  //connect(&request, SIGNAL(success(QVariantMap)), SLOT(processCommunicationToken(QVariantMap)));
+  transmit(request);
 }
 
 void Client::processCommunicationToken(const QVariantMap& result) {
@@ -78,7 +81,7 @@ void Client::errorCommunicationToken(const QNetworkReply::NetworkError& error) {
 
 void Client::transmit(Request* gsRequest) {
   QNetworkReply* reply;
-  QNetworkRequest request(QUrl(""));
+  QNetworkRequest request(APIUrl);
 
   request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
@@ -87,7 +90,7 @@ void Client::transmit(Request* gsRequest) {
   connect(reply, SIGNAL(finished()), gsRequest, SLOT(onFinished()));
   connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), gsRequest, SLOT(onError(QNetworkReply::NetworkError)));
 
-  qDebug() << "Transmitting: " << gsRequest->buildRequest();
+  qDebug() << "Transmitting:" << gsRequest->buildRequest();
 }
 
 } // namespace Grooveshark

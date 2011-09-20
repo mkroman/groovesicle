@@ -16,6 +16,7 @@
 
 #include <QDebug>
 
+#include "Client.hpp"
 #include "Request.hpp"
 
 namespace Grooveshark {
@@ -24,8 +25,8 @@ Request::Request(QString const& method, QVariantMap& parameters)
   : m_method(method), m_parameters(parameters) {
   QVariantMap country;
 
-  m_headers.insert("client", "htmlshark");
-  m_headers.insert("clientRevision", "20110606.04");
+  m_headers.insert("client", Client::Name);
+  m_headers.insert("clientRevision", Client::Revision);
 
   country.insert("CC1","0");
   country.insert("CC3","0");
@@ -52,14 +53,11 @@ void Request::setParameter(const QString& name, const QString& value) {
 }
 
 void Request::onFinished() {
-  QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-
-  qDebug() << Q_FUNC_INFO << "Response:";
-  qDebug() << reply->readAll();
+  qDebug("lulz onfinished");
 }
 
 void Request::onError(const QNetworkReply::NetworkError& error) {
-  qDebug() << Q_FUNC_INFO;
+  qDebug("lolz onerror");
 }
 
 } // namespace Grooveshark

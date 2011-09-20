@@ -34,9 +34,10 @@ class Client : public QObject {
     Q_OBJECT
 
 public:
-    static QString const API_URL;
-    static QString const BASE_URL;
-    static QString const REVISION;
+    static QString const Name;
+    static QString const Revision;
+    static const QString APIUrl;
+    static const QString BaseUrl;
 
     Client();
 
