@@ -36,14 +36,17 @@ class Client : public QObject {
 public:
     static QString const API_URL;
     static QString const BASE_URL;
+    static QString const REVISION;
 
     Client();
 
     void establishConnection();
     void transmit(Request* request);
+    void getCommunicationToken();
 
 private slots:
     void extractSessionCookie();
+    void processCommunicationToken(const QVariantMap& result);
 
 private:
     QString               m_session;

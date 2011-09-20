@@ -26,9 +26,10 @@ namespace Grooveshark {
 
 class Request : public QObject {
 public:
-    Request(const QString& method, QVariantMap& parameters);
+    Request(QString const& method, QVariantMap& parameters);
 
     QByteArray buildRequest();
+    void setParameter(const QString& name, const QString& value);
 
 private:
     QString     m_method;

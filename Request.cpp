@@ -18,7 +18,7 @@
 
 namespace Grooveshark {
 
-Request::Request(const QString& method, QVariantMap& parameters)
+Request::Request(QString const& method, QVariantMap& parameters)
   : m_method(method), m_parameters(parameters) {
   QVariantMap country;
 
@@ -32,7 +32,6 @@ Request::Request(const QString& method, QVariantMap& parameters)
   country.insert("CC4","1073741824");
 
   m_headers.insertMulti("country", country);
-  m_parameters.insertMulti("country", country);
 }
 
 QByteArray Request::buildRequest() {
@@ -44,6 +43,10 @@ QByteArray Request::buildRequest() {
   values.insert("parameters", m_parameters);
 
   return serializer.serialize(values);
+}
+
+void Request::setParameter(const QString& name, const QString& value) {
+  m_parameters.insert(name, value);
 }
 
 } // namespace Grooveshark

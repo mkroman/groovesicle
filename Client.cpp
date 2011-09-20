@@ -15,11 +15,14 @@
  */
 
 #include "Client.hpp"
+#include "Request.hpp"
 
 namespace Grooveshark {
 
 QString const Client::API_URL = "http://grooveshark.com/";
 QString const Client::BASE_URL = "http://grooveshark.com/";
+
+QString const Client::REVISION = "20110606.04";
 
 Client::Client() : m_networkManager() {
 }
@@ -54,8 +57,22 @@ void Client::extractSessionCookie() {
     qDebug("Failed to extract session cookie.");
 }
 
-void Client::transmit(Request* request) {
+void Client::getCommunicationToken() {
+  QVariantMap map;
 
+  Request request("getCommunicationToken", map);
+  request.setParameter("secretKey", "lortihovedet");
+
+  connect(&request, SIGNAL(success(QVariantMap)), SLOT(processCommunicationToken(QVariantMap)));
+  transmit(&request);
+}
+
+void Client::processCommunicationToken(const QVariantMap& result) {
+
+}
+
+void Client::transmit(Request* request) {
+  qDebug() << "Transmitting: " << request->buildRequest();
 }
 
 } // namespace Grooveshark
