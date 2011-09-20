@@ -17,13 +17,15 @@
 #include "Client.hpp"
 #include "Request.hpp"
 
+#include <QCryptographicHash>
+
 namespace Grooveshark {
 
-const QString Client::APIUrl = "https://cowbell.grooveshark.com/";
+const QString Client::APIUrl = "https://cowbell.grooveshark.com/more.php";
 const QString Client::BaseUrl = "http://grooveshark.com/";
 
 QString const Client::Name = "htmlshark";
-QString const Client::Revision = "20110606.04";
+QString const Client::Revision = "20110906";
 
 Client::Client() : m_networkManager() {
 }
@@ -43,7 +45,7 @@ void Client::extractSessionCookie() {
   QNetworkReply* reply;
   QList<QNetworkCookie> cookieList;
 
-  reply = qobject_cast<QNetworkReply *>(sender());
+  reply = qobject_cast<QNetworkReply*>(sender());
   cookieList = m_networkManager.cookieJar()->cookiesForUrl(QUrl(BaseUrl));
 
   foreach (const QNetworkCookie& cookie, cookieList) {
@@ -62,35 +64,43 @@ void Client::extractSessionCookie() {
 }
 
 void Client::getCommunicationToken() {
-  QVariantMap map;
+  Request* request = new Request("getCommunicationToken");
 
-  Request* request = new Request("getCommunicationToken", map);
-  request->setParameter("secretKey", "lortihovedet");
+  request->setParent(this);
+  request->setParameter("secretKey", QCryptographicHash::hash(m_session.toAscii(), QCryptographicHash::Md5).toHex());
 
-  //connect(&request, SIGNAL(success(QVariantMap)), SLOT(processCommunicationToken(QVariantMap)));
+  connect(request, SIGNAL(success(Response)), SLOT(processCommunicationToken(Response)));
+
   transmit(request);
 }
 
-void Client::processCommunicationToken(const QVariantMap& result) {
-
+void Client::processCommunicationToken(const Response& response) {
+  if (response.error()) {
+    qDebug() << Q_FUNC_INFO << "failed";
+    return;
+  }
+  else {
+    qDebug() << "Got communication token:" << response.getResult().toString();
+  }
 }
 
 void Client::errorCommunicationToken(const QNetworkReply::NetworkError& error) {
   qDebug("Failed to retrieve communication token.");
 }
 
-void Client::transmit(Request* gsRequest) {
+void Client::transmit(Request* request) {
   QNetworkReply* reply;
-  QNetworkRequest request(APIUrl);
+  QNetworkRequest networkRequest(APIUrl);
 
-  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+  networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-  reply = m_networkManager.post(request, gsRequest->buildRequest());
+  if (!m_session.isEmpty())
+    request->setHeader("session", m_session);
 
-  connect(reply, SIGNAL(finished()), gsRequest, SLOT(onFinished()));
-  connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), gsRequest, SLOT(onError(QNetworkReply::NetworkError)));
+  reply = m_networkManager.post(networkRequest, request->buildRequest());
 
-  qDebug() << "Transmitting:" << gsRequest->buildRequest();
+  connect(reply, SIGNAL(finished()), request, SLOT(onFinished()));
+  connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), request, SLOT(onError(QNetworkReply::NetworkError)));
 }
 
 } // namespace Grooveshark

@@ -22,12 +22,16 @@ PKGCONFIG += QJson
 
 SOURCES += main.cpp \
     Client.cpp \
-    Request.cpp
+    Request.cpp \
+    Response.cpp
 
 HEADERS += \
     Client.hpp \
     Grooveshark.hpp \
-    Request.hpp
+    Request.hpp \
+    Response.hpp
+
+
 
 
 

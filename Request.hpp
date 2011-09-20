@@ -23,22 +23,33 @@
 
 #include <QJson/Serializer>
 
+#include "Response.hpp"
+
 namespace Grooveshark {
 
 class Request : public QObject {
     Q_OBJECT
 public:
+    Request(QString const& method);
     Request(QString const& method, QVariantMap& parameters);
 
     QByteArray buildRequest();
+
     void setParameter(const QString& name, const QString& value);
+    void setHeader(const QString& name, const QString& value);
 
 public slots:
     void onFinished();
     void onError(const QNetworkReply::NetworkError& error);
 
+signals:
+    void success(const Response& response);
+
 private:
+    void insertDefaultParameters();
+
     QString     m_method;
+    Response*   m_response;
     QVariantMap m_headers;
     QVariantMap m_parameters;
 };

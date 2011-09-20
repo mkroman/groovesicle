@@ -18,21 +18,31 @@
 
 #include "Client.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 
 namespace Grooveshark {
 
+Request::Request(QString const& method)
+  : m_method(method), m_parameters() {
+  insertDefaultParameters();
+}
+
 Request::Request(QString const& method, QVariantMap& parameters)
   : m_method(method), m_parameters(parameters) {
+  insertDefaultParameters();
+}
+
+void Request::insertDefaultParameters() {
   QVariantMap country;
 
   m_headers.insert("client", Client::Name);
   m_headers.insert("clientRevision", Client::Revision);
 
-  country.insert("CC1","0");
-  country.insert("CC3","0");
-  country.insert("ID","223");
+  country.insert("ID","57");
+  country.insert("CC1","72057594037927936");
   country.insert("CC2","0");
-  country.insert("CC4","1073741824");
+  country.insert("CC3","0");
+  country.insert("CC4","0");
 
   m_headers.insertMulti("country", country);
 }
@@ -52,8 +62,28 @@ void Request::setParameter(const QString& name, const QString& value) {
   m_parameters.insert(name, value);
 }
 
+void Request::setHeader(const QString& name, const QString& value) {
+  m_headers[name] = value;
+}
+
 void Request::onFinished() {
-  qDebug("lulz onfinished");
+  bool parserSuccess;
+  QVariantMap body;
+  QJson::Parser parser;
+  QNetworkReply* reply;
+
+  reply = qobject_cast<QNetworkReply *>(sender());
+  body  = parser.parse(reply->readAll(), &parserSuccess).toMap();
+
+  if (parserSuccess) {
+    m_response = new Response(body);
+    m_response->setParent(this);
+
+    emit success(const_cast<const Response&>(*m_response));
+  }
+  else {
+    // error
+  }
 }
 
 void Request::onError(const QNetworkReply::NetworkError& error) {

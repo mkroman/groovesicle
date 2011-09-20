@@ -30,25 +30,27 @@
 namespace Grooveshark {
 
 class Request;
+class Response;
+
 class Client : public QObject {
     Q_OBJECT
 
 public:
     static QString const Name;
     static QString const Revision;
-    static const QString APIUrl;
-    static const QString BaseUrl;
+    static QString const APIUrl;
+    static QString const BaseUrl;
 
     Client();
 
-    void establishConnection();
     void transmit(Request* request);
+    void establishConnection();
     void getCommunicationToken();
 
 private slots:
     void extractSessionCookie();
-    void processCommunicationToken(const QVariantMap& result);
     void errorCommunicationToken(const QNetworkReply::NetworkError& error);
+    void processCommunicationToken(const Response& response);
 
 private:
     QString               m_session;
