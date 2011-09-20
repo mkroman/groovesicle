@@ -26,12 +26,9 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QVariantMap d;
-    d.insert("test", "tres");
+    Grooveshark::Client client;
 
-    Grooveshark::Request* request = new Grooveshark::Request("test", d);
-
-    qDebug() << request->buildRequest();
+    client.establishConnection();
 
     return a.exec();
 }

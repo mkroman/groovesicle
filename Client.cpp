@@ -15,15 +15,43 @@
  */
 
 #include "Client.hpp"
-#include <QJson/Serializer>
 
 namespace Grooveshark {
 
-Client::Client() {
+QString const Client::API_URL = "http://grooveshark.com/";
+QString const Client::BASE_URL = "http://grooveshark.com/";
+
+Client::Client() : m_networkManager() {
 }
 
 void Client::establishConnection() {
-  // …
+  QNetworkReply* reply;
+  QNetworkRequest request(QUrl("http://grooveshark.com"));
+
+  qDebug("Establishing connection.");
+
+  reply = m_networkManager.get(request);
+  connect(reply, SIGNAL(finished()), SLOT(extractSessionCookie()));
+}
+
+void Client::extractSessionCookie() {
+  QNetworkReply* reply;
+  QList<QNetworkCookie> cookieList;
+
+  reply = qobject_cast<QNetworkReply *>(sender());
+  cookieList = m_networkManager.cookieJar()->cookiesForUrl(QUrl(BASE_URL));
+
+  foreach (const QNetworkCookie& cookie, cookieList) {
+    if (cookie.name() == "PHPSESSID") {
+      m_session = QString(cookie.value());
+      break;
+    }
+  }
+
+  if (!m_session.isEmpty())
+    qDebug("Extracted session cookie.");
+  else
+    qDebug("Failed to extract session cookie.");
 }
 
 void Client::transmit(Request* request) {
@@ -31,3 +59,4 @@ void Client::transmit(Request* request) {
 }
 
 } // namespace Grooveshark
+

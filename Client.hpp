@@ -17,20 +17,37 @@
 #ifndef GROOVESHARK_CLIENT_HPP
 #define GROOVESHARK_CLIENT_HPP
 
+#include <QDebug>
 #include <QObject>
+#include <QNetworkReply>
+#include <QNetworkCookie>
+#include <QNetworkRequest>
+#include <QNetworkCookieJar>
+#include <QNetworkAccessManager>
+
+#include <QJson/Serializer>
 
 namespace Grooveshark {
 
 class Request;
 class Client : public QObject {
+    Q_OBJECT
+
 public:
+    static QString const API_URL;
+    static QString const BASE_URL;
+
     Client();
 
     void establishConnection();
     void transmit(Request* request);
 
+private slots:
+    void extractSessionCookie();
+
 private:
-    QString m_session;
+    QString               m_session;
+    QNetworkAccessManager m_networkManager;
 };
 
 } // namespace Grooveshark
