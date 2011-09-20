@@ -47,6 +47,7 @@ public:
 private slots:
     void extractSessionCookie();
     void processCommunicationToken(const QVariantMap& result);
+    void errorCommunicationToken(const QNetworkReply::NetworkError& error);
 
 private:
     QString               m_session;

@@ -22,8 +22,6 @@ namespace Grooveshark {
 QString const Client::API_URL = "http://grooveshark.com/";
 QString const Client::BASE_URL = "http://grooveshark.com/";
 
-QString const Client::REVISION = "20110606.04";
-
 Client::Client() : m_networkManager() {
 }
 
@@ -35,6 +33,7 @@ void Client::establishConnection() {
 
   reply = m_networkManager.get(request);
   connect(reply, SIGNAL(finished()), SLOT(extractSessionCookie()));
+  connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), SLOT(errorCommunicationToken(QNetworkReply::NetworkError)));
 }
 
 void Client::extractSessionCookie() {
@@ -55,6 +54,8 @@ void Client::extractSessionCookie() {
     qDebug("Extracted session cookie.");
   else
     qDebug("Failed to extract session cookie.");
+
+  getCommunicationToken();
 }
 
 void Client::getCommunicationToken() {
@@ -71,8 +72,22 @@ void Client::processCommunicationToken(const QVariantMap& result) {
 
 }
 
-void Client::transmit(Request* request) {
-  qDebug() << "Transmitting: " << request->buildRequest();
+void Client::errorCommunicationToken(const QNetworkReply::NetworkError& error) {
+  qDebug("Failed to retrieve communication token.");
+}
+
+void Client::transmit(Request* gsRequest) {
+  QNetworkReply* reply;
+  QNetworkRequest request(QUrl(""));
+
+  request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+  reply = m_networkManager.post(request, gsRequest->buildRequest());
+
+  connect(reply, SIGNAL(finished()), gsRequest, SLOT(onFinished()));
+  connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), gsRequest, SLOT(onError(QNetworkReply::NetworkError)));
+
+  qDebug() << "Transmitting: " << gsRequest->buildRequest();
 }
 
 } // namespace Grooveshark

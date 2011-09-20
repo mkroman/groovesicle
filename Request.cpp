@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <QDebug>
+
 #include "Request.hpp"
 
 namespace Grooveshark {
@@ -47,6 +49,17 @@ QByteArray Request::buildRequest() {
 
 void Request::setParameter(const QString& name, const QString& value) {
   m_parameters.insert(name, value);
+}
+
+void Request::onFinished() {
+  QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+
+  qDebug() << Q_FUNC_INFO << "Response:";
+  qDebug() << reply->readAll();
+}
+
+void Request::onError(const QNetworkReply::NetworkError& error) {
+  qDebug() << Q_FUNC_INFO;
 }
 
 } // namespace Grooveshark
